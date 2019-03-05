@@ -1,0 +1,19 @@
+{
+  "name": "noshpit",
+  "version": "1.0.0",
+  "description": "Noshpit-webapp-version-1.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "babel-node --presets es2015 app.js"
+  },
+  "author": "Harmandeep Sandhu",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "express": "^4.16.4",
+    "jquery": "^3.3.1"
+  }
+}
