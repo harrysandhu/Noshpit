@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="./css/style.css" type="text/css" rel="stylesheet" />
+    <link href="./css/user.css" type="text/css" rel="stylesheet" />
+    <link href="./css/profile.css" type="text/css" rel="stylesheet" />
+
+    <script src="./js/profile.min.js"></script>
+  </head>
+  <body>
+        <div class="newUserView cf-column" style="display:none">
+            <img src="images/logo1.png" class="logoImage small"/>
+            <h4 class="def-head">One more step..</h4>
+            <div class="cf-row">
+                <form class="lastStepForm">
+                    <div class="cf-column">
+                        <h6 class="def-text">Choose a username</h6>
+                            <input class="formInput usernameInput"
+                            type="text" 
+                            placeholder="Choose a username" 
+                            name="user_username"
+                            required
+                                />
+                    </div>
+                    <input type="submit" value="Finish" class="buttonDefault" 
+    disabled="true"/>
+                </form>
+            </div>
+        </div>
+
+        <div class="mainContainer cf-column">
+        
+        <header class="headerContainer cf-column">
+            <div class="mainHead cf-row">
+                <div class="headerLeftContent cf-row">
+                        <a href="/"><img src="images/logo1.png" class="logoImage small"/></a>
+                    <div class="newPostBtn">
+                        <img src="./images/icons/add.png" class="newPostImage"/>
+                    </div>
+                </div>  
+                <div class="headerRightContent cf-row">
+                    <div class="headerLink"><img class="headerIcon" src="images/icons/search.png" /></div>
+                    <div class="headerLink"><img class="headerIcon" src="images/icons/notifications.png"/></div>
+                    <div class="headerLink userHome"><img class="headerIcon" src="images/icons/user.png"/></div>
+                </div>
+            </div>
+        </header>    
+        <div class="contentFlex cf-column">
+            <div class="userContent cf-row">
+                <div class="userProfilePicture">
+                    <img class="userAvatar"/>
+                </div>
+                <div class="userData cf-column">
+                    <div class="userVal cf-row">
+                        <h3 class="user_username"></h3>
+                        <button class="outlineBtn userAuth">Edit</button>
+                        <button class="logoutBtn userAuth">Logout</button>
+                    </div>
+                    <div class="userFullNameBio cf-column">
+                        <h5 class="user_userFullName"></h5>
+                        <p class="user_userBio"></p>
+                        
+                    </div> 
+                </div>
+            </div>
+        </div>
+           
+    
+</div>
+    </body>
+</html>
