@@ -50,6 +50,24 @@ export function usernameIsValid(username){
 }
 
 
+export function usernameIsAvailable(users, username) {
+
+    var x = false;
+    users.on("value", (snap) => {
+        //snap.val() is the all the users
+
+        for (var u in snap.val()) {
+            if (username === snap.val()[u].user_username) {
+                x = false;
+                return x;
+            } else {
+                x = true;
+            }
+        }
+    })
+    return x;
+}
+
 
 
 

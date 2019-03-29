@@ -6,9 +6,22 @@ import 'firebase/auth'
 //import initialized firebase app
 //import firebaseConfig from './config'
 
+
+
 import {
-    usernameIsValid
+    usernameIsValid, usernameIsAvailable
 } from './functions/userFunctions'
+
+
+
+import {
+    renderNewsFeed
+} from './functions/renderFunctions'
+
+
+import {
+    loadPosts
+} from './functions/loadFunctions'
 
 
 firebase.initializeApp({
@@ -37,46 +50,6 @@ var localPosts = {data: {}, loading: true}
 
 
 
-function loadPosts(){
-    return new Promise((resolve, reject) => {
-        //var communityPosts;
-        communities.on("value", (snap) =>{
-            for(var cid = 0; cid < snap.val().length; cid++){
-                
-                var communityPosts = snap.val()[cid].c_posts;
-                communityPosts.forEach(postId => {
-                
-                       var postRef = db.ref().child("posts/"+ postId)
-                    postRef.once("value").then((postSnapshot) =>{
-                        var post_user = postSnapshot.val().post_user
-                        localPosts.data[postId] = postSnapshot.val()
-                        var userRef = users.child(post_user)
-                         //localPosts.data[postId].user = {}
-                        userRef.once("value").then((userSnapshot) =>{
-                            console.log(userSnapshot.val().user_username)
-                            localPosts.data[postId]['user'] = {...userSnapshot.val()}
-
-                            localPosts.loading = false;
-                            resolve(localPosts.data)
-                        })
-                        
-
-
-
-                        
-                    })
-                  
-                });
-               
-            }
-        })
-        
-    })
-      
-}
-
-
-
 
 
 function loadUser() {
@@ -100,6 +73,8 @@ function loadUser() {
             })
            
         }else{
+
+            window.location.href = "/";
             reject("Something went wrong")
         }
        
@@ -115,23 +90,7 @@ function loadUser() {
 
 
 
-function usernameIsAvailable(username) {
 
-    var x = false;
-    users.on("value", (snap) => {
-        //snap.val() is the all the users
-
-        for (var u in snap.val()) {
-            if (username === snap.val()[u].user_username) {
-                x = false;
-                return x;
-            } else {
-                x = true;
-            }
-        }
-    })
-    return x;
-}
 
 
 function getUser(postId){
@@ -142,78 +101,10 @@ function getUser(postId){
 }
 
 
-function renderNewsFeed(posts){
-   
-   
-    for(var postId in posts){
-    console.log("the post id is::", posts[postId].user)
-    $('.newsFeedPostsContainer').append('<div class="post cf-column" id='+postId+ '></div>')
-    var postComponent = $('#'+postId )
-
-    //post user
-    postComponent.append('<div class="postUser cf-row"></div>')
-        var postUser = $('#'+postId + ' .postUser' )
-            postUser.append('<img class="post_userProfilePicture" /><p class="post_userUsername"></p>')
-            var post_userProfilePicture = $('#'+postId+ ' .post_userProfilePicture')
-            var post_userUsername = $('#'+postId + ' .post_userUsername')
-    ////////
-
-    //post image
-    postComponent.append('<img class="postImage" />')
-    var postImage = $('#'+postId + ' .postImage')
-    ////////
-
-    //post interactions
-    postComponent.append('<div class="postInteractions"></div>')
-    var postInteractions = $('#'+postId + ' .postInteractions')
-
-    postComponent.append('<div class="postInfo"><p class="postDesc"></p><p class="postLocation"></p><p class="postUsersInvoled"></p></div>')
-    var postInfo = $('#'+postId + ' .postInfo')
-    var postDesc = $('#'+postId + ' .postDesc')
-    var postLocation = $('#'+postId + ' .postLocation')
-    var postUsersInvoled = $('#'+postId + ' .postUsersInvoled')
-
-
-        var post = posts[postId]
-        const user = post.user
-        
-        // var like_state;
-        // for(int i = 0; i < post.post_likes; i++){
-        //     if(post.users_liked[i] == user.data.user_username){
-        //         like_state = true;
-        //     }
-        // }
-
-        console.log(post.user_username)
-        var username = null;
-        
-        
-        if(post.post_likes == 1){
-            postInteractions.append('<p class="likeCount">'+post.post_likes+' like</p>')
-        }else{
-         postInteractions.append('<p class="likeCount">'+post.post_likes+' likes</p>')
-        }
-        post_userUsername.html('<a href="/'+user.user_username+'">'+user.user_username+' ')
-        post_userProfilePicture.attr("src", "/images/users/"+user.user_profilePicture)
-        postImage.attr("src", "/images/posts/foodphoto"+'.jpg')
-       
-        postDesc.html(post.post_desc)
-        postLocation.html(post.post_location)
-        postUsersInvoled.html(post.post_peopleOpted +' / '+ post.post_maxUsers + ' people are in')
-        
-        
-    }
-}
-
-
 
 
 loadUser().then(() =>{
-    loadPosts().then((posts)=>{
-
-           
-
-
+    loadPosts(localPosts, users, communities, db).then((posts)=>{
 
 $(document).ready(() => {
     console.log(user)
@@ -238,7 +129,7 @@ $(document).ready(() => {
         //console.log(usernameIsAvailable())
         e.preventDefault()
         var username = $("[name='user_username']").val().trim()
-        var valid = usernameIsValid(username) && usernameIsAvailable(username);
+        var valid = usernameIsValid(username) && usernameIsAvailable(users, username);
         $('.buttonDefault').prop('disabled', !valid);
 
         if (!valid) {
@@ -256,6 +147,12 @@ $(document).ready(() => {
         }
 
     })
+
+
+    //new pos
+
+
+
 
     $('.lastStepForm').on("submit", (e) => {
         e.preventDefault()
@@ -290,5 +187,9 @@ $(document).ready(() => {
         });
     })
 })
+    }).catch((e) =>{
+        console.log(e)
     })
+}).catch((e) =>{
+    console.log(e)
 })
