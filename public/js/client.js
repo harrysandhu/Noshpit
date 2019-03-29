@@ -91,7 +91,7 @@ $(document).ready(() => {
                         console.log(user)
        
                              users.child(uid).set({
-                                 user_username: null,
+                                user_username: null,
                                 user_fullName : user_fullName,
                                 user_email : user_email,
                                 user_bio: "I do this and that.",
