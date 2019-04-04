@@ -2,7 +2,7 @@
 module.exports = {
 
 
-    loadPosts : (localPosts, users, communities, db) => {
+    loadPosts : (localPosts, users, communities, db, user) => {
 return new Promise((resolve, reject) => {
         //var communityPosts;
         communities.on("value", (snap) =>{
@@ -17,18 +17,9 @@ return new Promise((resolve, reject) => {
                         localPosts.data[postId] = postSnapshot.val()
                         var userRef = users.child(post_user)
                          //localPosts.data[postId].user = {}
-                        userRef.once("value").then((userSnapshot) =>{
-                            console.log(userSnapshot.val().user_username)
-                            localPosts.data[postId]['user'] = {...userSnapshot.val()}
-
-                            localPosts.loading = false;
+                    
+                         localPosts.data[postId]['user'] = user
                             resolve(localPosts.data)
-                        })
-                        
-
-
-
-                        
                     })
                   
                 });

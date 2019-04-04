@@ -42,10 +42,33 @@ a:hover{
     padding:20px;
 }
 
-
 .newPostImage{
-    margin-left:20px;
+    width:100%;
 }
+
+.newPostBtn{
+    width:45px;
+    margin-left:20px;
+    background:none;
+    border:none;   
+}
+
+.newPostBtn:hover{
+    width:50px;
+    transition:.2s;
+    cursor: pointer;
+
+}
+
+.newPostBtn:active{
+    outline:none;
+}
+
+.newPostBtn::after{
+    outline:none;
+
+}
+
 
 .headerLink{
     padding: 0px 10px;
@@ -110,4 +133,26 @@ a:hover{
     margin-top:-10px;
     color:#a0a0a0;
     font-size:14px;
+}
+
+
+
+.loadingFlex{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%;
+    overflow:hidden;
+    
+}
+
+.loadingFlex > img{
+    width:5%;
 }
