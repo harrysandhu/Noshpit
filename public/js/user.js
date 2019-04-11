@@ -3,10 +3,14 @@ import $ from 'jquery';
 import firebase from 'firebase'
 import 'firebase/database'
 import 'firebase/auth'
+
+
+
+
 //import initialized firebase app
 //import firebaseConfig from './config'
 
-
+import flatpickr from 'flatpickr';
 
 import {
     usernameIsValid, usernameIsAvailable
@@ -18,7 +22,8 @@ import {
     // renderNewsFeed, 
     renderChoseUsername, 
     renderHome,
-     renderNewsFeed
+     renderNewsFeed,
+     prependPost
 } from './functions/renderFunctions'
 
 
@@ -65,6 +70,10 @@ var state = {
     postInitial: 0,
     postFinal : 4,
     postsHaveReachedEnd: false,
+    //communites
+    communities : {},
+    newPost : {}
+
 }
 
 
@@ -107,11 +116,215 @@ function loadUser() {
 }
 
 
+function displayError(error){
+    $('.ERR_newPostForm').css({
+        display: 'flex'
+    })
+     $('.ERR_newPostForm').html(error)
+     return false;
+}
+
+
+function hideError(){
+   $('.ERR_newPostForm').css({
+        display: 'none'
+    })
+}
+
+
+
 function ApplyUIEventListeners(){
   
-        $('.newPostBtn').on("click", ()=>{
-            e.preventDefault();
+
+
+$('.formGroup > input').on("change", (e)=>{
+    e.preventDefault();
+    hideError();
+    
+})
+
+
+
+
+
+
+  /**
+        * Add new post
+        * --------**NEW POST**---------
+         */
+
+
+
+$('.submitPostBtn').on("click", (e)=>{
+    e.preventDefault();
+    var error = "";
+    var postDesc = $('.postTF').val();
+    var postLocation = $('.postLocationTF').val()
+    var postMaxPeople = $('.postMaxPeopleTF').val()
+    var postDateTime = $('.postDateTimeTF').val()
+    console.log(postDateTime)
+    var postImage = $('.newPostImage').attr('src');
+    var postCommunity = 0;
+    if(postImage.includes("defaultNewPost")){
+        error = "Please upload an image!";
+        displayError(error)
+    }
+    else if(postDesc.trim().length < 5){
+        error = "Description is too small!"
+        displayError(error);
+    }else if(parseInt(postMaxPeople) < 1 || parseInt(postMaxPeople) > 500){
+         error = "Invalid value for number of people.";
+        displayError(error)
+    }
+    else {
+        console.log(state)
+        if(postLocation.includes("BCIT")){
+            postCommunity = 0;
+        }else if(postLocation.includes("UBC")){
+            postCommunity = 1;
+        }
+        //put it into the database
+         var postRef = firebase.database().ref().child('posts')
+         var postKeyIndex = null;
+        postRef.once("value").then((snap) =>{
+            postKeyIndex = Object.keys(snap.val()).length
+
+
+         firebase.database().ref().child("posts/" + postKeyIndex ).set({
+            post_community : postCommunity,
+            post_dateTime : postDateTime,
+            post_desc: postDesc,
+            post_image : postImage,
+            post_likes: 0,
+            post_location : postLocation,
+            post_maxUsers : postMaxPeople,
+            post_peopleOpted : 0,
+            post_user: state.user.uid,
+            users_liked : {}
+         }).then(() =>{
+
+            var userRef = firebase.database().ref().child("users/" + state.user.uid + '/user_posts')
+            var userPostKeyIndex = null;
+            userRef.once("value").then((data) =>{
+                userPostKeyIndex = Object.keys(data.val()).length
+                firebase.database().ref().child("users/" +state.user.uid + '/user_posts/' + userPostKeyIndex).set(
+                    postKeyIndex
+                  ).then(() =>{
+                    var commRef = firebase.database().ref().child("communities/" + postCommunity + "/c_posts")
+                    var newCommunityPostKeyIndex = null;
+                    commRef.once("value").then((snapshot)=>{
+                        newCommunityPostKeyIndex = Object.keys(snapshot.val()).length
+                        firebase.database().ref().child("communities/" + postCommunity + "/c_posts/" + newCommunityPostKeyIndex).set(
+                            postKeyIndex
+                            ).then(()=>{
+                                state.newPost = {
+                                    postId : postKeyIndex,
+                                    post_community : postCommunity,
+                                    post_dateTime : postDateTime,
+                                    post_desc: postDesc,
+                                    post_image : postImage,
+                                    post_likes: 0,
+                                    post_location : postLocation,
+                                    post_maxUsers : postMaxPeople,
+                                    post_peopleOpted : 0,
+                                    post_user: state.user.uid,
+                                    users_liked : {},
+                                    user_username: state.user.user_username,
+                                    user_profilePicture: state.user.user_profilePicture
+                                 }
+                                 console.log(state.newPost)
+                                 prependPost(state.newPost, state)
+                                
+                                 state.newPost = {}
+
+                            $('.newPostModal').css({
+                                'display' : 'none'
+                            })
+                        })
+                    })
+    
+                   
+                  })
+            })
+
+
+
+             
+         })
+       
+
             
+        })
+
+        
+        
+
+
+
+    
+    }
+    
+})
+
+
+
+
+
+
+
+$('.postImageInput').on("change", ()=>{
+    var fReader = new FileReader()
+   
+    var image = document.getElementById("postImageInput").files[0]
+    
+    fReader.readAsDataURL(image)
+    fReader.onloadend = (event) =>{
+ $('.newPhoto').html('<img class="newPostImage" src="'+event.target.result+'"/>')
+    
+    }   
+})
+    
+
+    
+
+
+
+
+
+        flatpickr("#postDateTimeTF", {
+    enableTime: true,
+    altInput: true,
+    altFormat: "F j, Y at H:i",
+       dateFormat: "Y-m-d at H:i",
+       minDate: "today"
+});
+
+
+
+        $('.newPostBtn').on("click", (e)=>{
+            e.preventDefault();
+            $('.newPostModal').css({
+                'display': 'flex',
+                'transition': '.7s'
+            })    
+
+        })
+
+        $('.newPostModal').on("click", (e)=>{
+            const modal = $('.newPostModal')
+            const newPostImage =$('.newPostImage')
+            console.log(e.target)
+            if(e.target == modal[0]){
+                $('.newPostModal').css({
+            'display': 'none',
+
+             })
+            }else if(e.target == newPostImage[0]){
+                console.log("shi")
+                $('.postImageInput').trigger("click")
+            }
+         
+
         })
 
 
@@ -161,7 +374,7 @@ function ApplyUIEventListeners(){
 
             $('.userHome').on('click', (e)=>{
                         e.preventDefault()
-                        window.location.href = "/"+ state.user_username
+                        window.location.href = "/"+ state.user.user_username
                     })
 
 
@@ -177,14 +390,6 @@ function ApplyUIEventListeners(){
             })
 }
 
-
-
-// function getUser(postId){
-//     return new Promise((resolve, reject) =>{
-//         resolve(localPosts.data[postId]['user'])
-//         reject("Something went wrong")
-//     })
-// }
 
 function postsIdComperator(a, b){
     if(a > b){
@@ -202,6 +407,7 @@ function loadPosts(postInitial, postFinal){
         var postsByCommunities = []
         
         for(var cid in comm_snap.val()){
+            state.communities[cid] = comm_snap.val()[cid].c_name
             comm_snap.val()[cid].c_posts.forEach(postId =>{
                 postsByCommunities.push(postId)
             })
@@ -212,20 +418,10 @@ function loadPosts(postInitial, postFinal){
         postsByCommunities = postsByCommunities.reverse();
         state.allPosts = postsByCommunities;
         console.log(state.allPosts)
-
-        
-        
-        //set postsToLoad and set state for rendering
-// if(postInitial >= postsByCommunities){
-//             state.postsHaveReachedEnd = true;
-//         }
         var postsToLoad = []
         postInitial = (postInitial >= postsByCommunities) ? postsByCommunities.length - 1 : postInitial;
         
         postFinal = (postFinal > postsByCommunities.length) ? postsByCommunities.length : postFinal;
-
-
-
 
         for(var x = postInitial; x < postFinal; x++){
             postsToLoad.push(postsByCommunities[x]);
@@ -235,6 +431,7 @@ function loadPosts(postInitial, postFinal){
 
         console.log("Posts to load: (loadPosts): ", state.postsToLoad)
         
+        //prepare posts
         postsToLoad.forEach(postId => {
             var postRef = db.ref().child("posts/" + postId)
             postRef.on("value", (post_snap)=>{
@@ -251,7 +448,7 @@ function loadPosts(postInitial, postFinal){
                 postUserProfilePictureRef.on("value", (profilePicSnap) =>{
                     state.posts[postId]['user_profilePicture'] = profilePicSnap.val();
                 })
-
+                
             })
             
 
@@ -280,16 +477,6 @@ reject("Something went wrong.")
     })
 
 }
-
-
-// function loadPosts(postInitial, postFinal){
-//     return new Promise((resolve, reject) =>{
-//         communities.on("value", (snap) =>{
-            
-//         })
-//     })
-// }
-
 
 
 $(document).ready(()=>{

@@ -28,6 +28,8 @@ module.exports = {
         path : __dirname + '/public/js',
         filename: '[name].min.js'
     },
+
+
     plugins : debug ? [] : [
         new webpack.optimize.DedupePlugin(),
         new webpack.optimize.OccurenceOrderPlugin(),

@@ -3,8 +3,11 @@
   <head>
     <link href="./css/style.css" type="text/css" rel="stylesheet" />
     <link href="./css/user.css" type="text/css" rel="stylesheet" />
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
     <script src="./js/user.min.js"></script>
+
   </head>
   <body>
         <div class="newUserView cf-column" style="display:none">
@@ -13,7 +16,8 @@
             <div class="cf-row">
                 <form class="lastStepForm">
                     <div class="cf-column">
-                        <h6 class="def-text">Choose a username</h6>
+                        <h6 class="def-
+                        text">Choose a username</h6>
                             <input class="formInput usernameInput"
                             type="text" 
                             placeholder="Choose a username" 
@@ -29,6 +33,55 @@
 
         <div class="mainContainer cf-column" style="display:none">
         
+
+        <div class='newPostModal cf-column'>
+            <div class="newPostContainer cf-column">       
+                 <div class="newPostImageContainer" >
+                       <div class="newPhoto"> <img class="newPostImage" src="./images/defaultNewPost.jpg" /></div>
+                        <input name="postImageInput" id="postImageInput" class="postImageInput" type="file" accept="image/*"/>
+                 </div> 
+                 <div class="newPostDescContainer cf-column">
+                 <form class="newPostForm cf-column">
+               
+                        <div class="ERR_newPostForm"></div>
+                        <div class="formGroup">
+                                <textarea name="postTF" class="postTF inputField" type="text" placeholder="Write something about the post!"></textarea>
+                        </div>
+
+                        <div class="formGroup">
+                            <input name="postLocationTF" 
+                            class="postLocationTF" 
+                            type="text" 
+                            placeholder="Location" />
+                        </div>
+
+                        <div class="formGroup">
+                            <input name="postMaxPeopleTF" 
+                            class="postMaxPeopleTF" 
+                            type="number"
+                            pattern="[0-9]" 
+                            placeholder="Max people"  
+                            min="1" max="500"/>
+                        </div>
+
+                        <div class="formGroup">
+                            <input name="postDateTimeTF" 
+                            class="postDateTimeTF" 
+                            id="postDateTimeTF" 
+                            placeholder="Date & Time" 
+                            type="text" />
+                        </div>     
+                
+                <button class="submitPostBtn">Post</button>
+            </form>
+        </div>
+            </div>
+        </div>
+
+
+
+
+        
         <header class="headerContainer cf-column">
             <div class="mainHead cf-row">
                 <div class="headerLeftContent cf-row">
@@ -38,11 +91,11 @@
                     </button>
                 </div>  
                 <div class="headerRightContent cf-row">
-                    <div class="headerLink"><img class="headerIcon" src="images/icons/search.png" /></div>
-                    <div class="headerLink"><img class="headerIcon" src="images/icons/notifications.png"/></div>
+                    <!-- <div class="headerLink"><img class="headerIcon" src="images/icons/search.png" /></div>
+                    <div class="headerLink"><img class="headerIcon" src="images/icons/notifications.png"/></div> -->
                     <div class="headerLink userHome"><img class="headerIcon" src="images/icons/user.png"/></div>
                 </div>
-                
+              
                 
             </div>
         </header>  

@@ -58,7 +58,7 @@ app.use(bodyParser.json())
 
 
 
-localhost:5000/
+
 
 app.get("/", (req, res) => {
     return res.render('signup')
