@@ -173,3 +173,63 @@ a:hover{
 
 
 
+
+.loginButton{
+    width: 250px;
+    border: none;
+    background-color: #1db954;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+
+}
+
+
+.loginButton:hover{
+    outline:none;
+    box-shadow: 0px 0px 56px 9px rgba(0,0,0,0.28);
+}
+
+
+.loginButton:disabled{
+    background-color: #a0a0a0;
+    cursor: not-allowed;
+}
+
+.loginButton:disabled:hover{
+    outline: none;
+    box-shadow: none;
+}
+
+
+
+
+
+.signUpButton{
+    width: 250px;
+    border: none;
+    background-color: #1db954;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+
+}
+
+
+.signUpButton:hover{
+    outline:none;
+    box-shadow: 0px 0px 56px 9px rgba(0,0,0,0.28);
+}
+
+
+.signUpButton:disabled{
+    background-color: #a0a0a0;
+    cursor: not-allowed;
+}
+
+.signUpButton:disabled:hover{
+    outline: none;
+    box-shadow: none;
+}

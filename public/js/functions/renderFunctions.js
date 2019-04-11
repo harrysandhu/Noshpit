@@ -17,7 +17,7 @@ module.exports = {
    stateData.postsToLoad.forEach((postId)=>{
 
     var likeState = false;
-
+    var countInState = false;
        var post = posts[postId];
       
         if(post){
@@ -61,7 +61,10 @@ module.exports = {
             var postInteractionButtons = $('#'+postId + ' .postInteractionButtons');
              postInteractionButtons.html('<button class="likeButton"></button><button class="countMeInBtn">Count Me In</button>')
 
-            var countMeInBtn = $('#'+postId + '.countMeInBtn');
+            
+
+
+            // countMeInBtn <--> postUsersInvoled <--> post.post_peopleOpted <-users- opted->
 
             /*************
             * post description
@@ -70,7 +73,7 @@ module.exports = {
             var postInfo = $('#'+postId + ' .postInfo')
             var postDesc = $('#'+postId + ' .postDesc')
             var postLocation = $('#'+postId + ' .postLocation')
-            var postUsersInvoled = $('#'+postId + ' .postUsersInvoled')
+           
             var postCommunity = $('#'+postId + ' .postCommunity')
             /*************
             * add data to the post
@@ -82,7 +85,7 @@ module.exports = {
 
 
 
-
+            var postUsersInvoled = $('#'+postId + ' .postUsersInvoled')
             var likeCount = $('#'+postId + ' .likeCount')
 
         post_userUsername.html('<a href="/'+post.user_username+'">'+post.user_username+' ')
@@ -101,8 +104,105 @@ module.exports = {
 
 
         var likeButton = $('#'+postId + ' .likeButton');
+        var countMeInBtn = $('#'+postId + ' .countMeInBtn');
         /**Like Button */
         
+
+
+        if(post.post_user !== currentUser.uid){
+            
+            if(post.hasOwnProperty('users_opted')){
+                for(var x in post.users_opted){
+                    
+                    if(post.users_opted[x] === currentUser.uid){
+                        countMeInBtn.html('Im IN!')
+                        countInState = true;
+                        break;
+                    }else if(post.post_maxUsers < post.post_peopleOpted){
+                        countMeInBtn.html('Count Me In')
+                        countInState = false;
+                    }else{
+                        countMeInBtn.css({
+                            'display':'none'
+                        })
+                    }
+                }
+
+                
+        
+                  
+                  
+            }else{
+                countMeInBtn.html('Count Me In')
+                countInState = false;
+            }   
+
+    }else if(post.post_user === currentUser.uid){
+        countMeInBtn.css({
+            'display':'none'
+        })
+    }
+
+    $(countMeInBtn).on("click" , ()=>{
+        if(countInState){
+            // opt out
+            countMeInBtn.html('Count Me In')
+            countInState = false;
+            firebase.database().ref().child("/posts/" + postId + "/post_peopleOpted").once("value").then((opted)=>{
+                postUsersInvoled.html(opted.val() - 1 +' / '+ post.post_maxUsers + ' people are in')
+                firebase.database().ref().child("/posts/" + postId + "/post_peopleOpted").set(
+                    opted.val() - 1
+                ).then(() =>{
+                    //update users_opted
+                    firebase.database().ref().child("posts/" + postId + "/users_opted").once("value").then((snap)=>{
+                        var usersOptedPost = snap.val()
+                        for(var uOptedId in usersOptedPost){
+                            if(usersOptedPost[uOptedId] == currentUser.uid){
+                                firebase.database().ref().child("posts/" + postId + "/users_opted/" + uOptedId).remove().then(()=>{
+                                    console.log("removed")
+                                })
+                            }
+                        }
+                    })
+                })
+            })
+
+            return true;
+            
+            
+        }else if(!countInState){
+            countMeInBtn.html('Im IN')
+            countInState = true;
+            firebase.database().ref().child("/posts/" + postId + "/post_peopleOpted").once("value").then((opted)=>{
+                postUsersInvoled.html(opted.val() + 1 +' / '+ post.post_maxUsers + ' people are in')
+                firebase.database().ref().child("/posts/" + postId + "/post_peopleOpted").set(
+                    opted.val() + 1
+                ).then(() =>{
+                    //update users_opted
+                    var postPeopleOpted = firebase.database().ref().child("posts/"+ postId + "/post_peopleOpted")
+                    var usersOpted = firebase.database().ref().child("posts/"+ postId + "/users_opted")
+                    postPeopleOpted.set( opted.val()+1).then(()=>{
+                   
+                        usersOpted.set({
+                            [opted.val()] : currentUser.uid
+                        }).then(()=>{
+                            console.log("opted")
+                        })
+                    })
+                })
+            })
+
+            return true;
+            
+        }
+    })
+
+
+
+
+
+
+
         if(post.hasOwnProperty('users_liked')){
             for(var x in post.users_liked){
                 console.log(x)
@@ -204,6 +304,7 @@ module.exports = {
     var currentUser = stateData.user
         const communities = stateData.communities
     if(post.hasOwnProperty('user_username')){
+        var likeState = true
             var postId = post['postId']
             console.log()
 
@@ -241,13 +342,14 @@ module.exports = {
 
             var postInteractions = $('#'+postId + ' .postInteractions')
             postInteractions.append('<div class="likeCount"></div>')
+            postInteractions.append('<div class="postInteractionButtons"></div>')
 
             var likeCount = $('#'+postId + ' .likeCount')
        
             var postInteractionButtons = $('#'+postId + ' .postInteractionButtons');
-             postInteractionButtons.html('<button class="likeButton"></button><button class="countMeInBtn">Count Me In</button>')
+             postInteractionButtons.html('<button class="likeButton"></button>')
 
-            var countMeInBtn = $('#'+postId + '.countMeInBtn');
+        
 
             /*************
             * post description

@@ -51,6 +51,33 @@ UserAuth()
 
 $(document).ready(() => {
 
+    $('.loginFormContainer').css({
+        'display' : 'none'
+    })
+
+$('.signUpButton').on("click", (e) =>{
+    e.preventDefault()
+    $('.loginFormContainer').css({
+        'display' : 'none'
+    })
+    $('.signUpFormContainer').css({
+        'display' : 'flex'
+    })
+})
+
+$('.loginButton').on("click", (e)=>{
+    e.preventDefault()
+    $('.loginFormContainer').css({
+        'display' : 'flex'
+    })
+    $('.signUpFormContainer').css({
+        'display' : 'none'
+    })
+
+})
+
+
+
     $('.formInput').keyup((e) => {
         e.preventDefault()
         if(nameIsValid($("[name='user_fullName']").val()) && 

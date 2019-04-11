@@ -14,7 +14,32 @@
     <img src="images/logo1.png" class="logoImage"/>
     </div>
 
-    <div class="formContainer cf-column">
+    <div class="formContainer loginFormContainer cf-column" >
+      <form class="loginForm">
+        
+              <input class="formInput"
+              type="email" 
+              placeholder="Email Address" 
+              name="user_email"
+              required
+              />
+              <input class="formInput"
+              type="password" 
+              placeholder="Enter your Password" 
+              name="user_password"
+              required
+              />
+      <input type="submit" value="Log In" class="buttonDefault" 
+      disabled="true"/>
+      </form>
+      <div class="loginButtonContainer" style="text-align: center">
+        <p>OR</p>
+        <button class="signUpButton blackbtn">Sign Up</button>
+    </div>
+
+      </div>
+
+    <div class="formContainer signUpFormContainer cf-column">
     <form class="signUpForm">
         <input class="formInput"
         type="text" 
@@ -37,11 +62,12 @@
     <input type="submit" value="Sign Up" class="buttonDefault" 
     disabled="true"/>
     </form>
+    <div class="loginButtonContainer" style="text-align: center">
+      <p>OR</p>
+      <button class="loginButton blackbtn">Login</button>
+  </div>
     </div>
-      <div class="loginButtonContainer">
-          <p>OR</p>
-          <button class="buttonDefault blackbtn">Login</button>
-      </div>
+      
     </div>
     </div>
 

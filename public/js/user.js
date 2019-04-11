@@ -185,7 +185,7 @@ $('.submitPostBtn').on("click", (e)=>{
         }
         //put it into the database
          var postRef = firebase.database().ref().child('posts')
-         var postKeyIndex = null;
+         var postKeyIndex = 0;
         postRef.once("value").then((snap) =>{
             postKeyIndex = Object.keys(snap.val()).length
 
@@ -203,48 +203,97 @@ $('.submitPostBtn').on("click", (e)=>{
             users_liked : {}
          }).then(() =>{
 
-            var userRef = firebase.database().ref().child("users/" + state.user.uid + '/user_posts')
-            var userPostKeyIndex = null;
+            var userRef = firebase.database().ref().child("users/" + state.user.uid)
+            
+            var userPostKeyIndex = 0;
             userRef.once("value").then((data) =>{
-                userPostKeyIndex = Object.keys(data.val()).length
-                firebase.database().ref().child("users/" +state.user.uid + '/user_posts/' + userPostKeyIndex).set(
-                    postKeyIndex
-                  ).then(() =>{
-                    var commRef = firebase.database().ref().child("communities/" + postCommunity + "/c_posts")
-                    var newCommunityPostKeyIndex = null;
-                    commRef.once("value").then((snapshot)=>{
-                        newCommunityPostKeyIndex = Object.keys(snapshot.val()).length
-                        firebase.database().ref().child("communities/" + postCommunity + "/c_posts/" + newCommunityPostKeyIndex).set(
-                            postKeyIndex
-                            ).then(()=>{
-                                state.newPost = {
-                                    postId : postKeyIndex,
-                                    post_community : postCommunity,
-                                    post_dateTime : postDateTime,
-                                    post_desc: postDesc,
-                                    post_image : postImage,
-                                    post_likes: 0,
-                                    post_location : postLocation,
-                                    post_maxUsers : postMaxPeople,
-                                    post_peopleOpted : 0,
-                                    post_user: state.user.uid,
-                                    users_liked : {},
-                                    user_username: state.user.user_username,
-                                    user_profilePicture: state.user.user_profilePicture
-                                 }
-                                 console.log(state.newPost)
-                                 prependPost(state.newPost, state)
-                                
-                                 state.newPost = {}
-
-                            $('.newPostModal').css({
-                                'display' : 'none'
+                if(data.val().hasOwnProperty('user_posts')){
+                    userPostKeyIndex = Object.keys(data.val()['user_posts']).length
+                    firebase.database().ref().child("users/" +state.user.uid + '/user_posts/' + userPostKeyIndex).set(
+                        postKeyIndex
+                      ).then(() =>{
+                        var commRef = firebase.database().ref().child("communities/" + postCommunity + "/c_posts")
+                        var newCommunityPostKeyIndex = 0;
+                        commRef.once("value").then((snapshot)=>{
+                            newCommunityPostKeyIndex = Object.keys(snapshot.val()).length
+                            firebase.database().ref().child("communities/" + postCommunity + "/c_posts/" + newCommunityPostKeyIndex).set(
+                                postKeyIndex
+                                ).then(()=>{
+                                    state.newPost = {
+                                        postId : postKeyIndex,
+                                        post_community : postCommunity,
+                                        post_dateTime : postDateTime,
+                                        post_desc: postDesc,
+                                        post_image : postImage,
+                                        post_likes: 0,
+                                        post_location : postLocation,
+                                        post_maxUsers : postMaxPeople,
+                                        post_peopleOpted : 0,
+                                        post_user: state.user.uid,
+                                        users_liked : {},
+                                        user_username: state.user.user_username,
+                                        user_profilePicture: state.user.user_profilePicture
+                                     }
+                                     console.log(state.newPost)
+                                     prependPost(state.newPost, state)
+                                    
+                                     state.newPost = {}
+    
+                                $('.newPostModal').css({
+                                    'display' : 'none'
+                                })
                             })
                         })
-                    })
+        
+                       
+                      })
+                }else{
+
+
+                    userRef.update({ 
+                        user_posts : {
+                           [0] : postKeyIndex
+                        }
+                    }).then(() =>{
+                        var commRef = firebase.database().ref().child("communities/" + postCommunity + "/c_posts")
+                        var newCommunityPostKeyIndex = 0;
+                        commRef.once("value").then((snapshot)=>{
+                            newCommunityPostKeyIndex = Object.keys(snapshot.val()).length
+                            firebase.database().ref().child("communities/" + postCommunity + "/c_posts/" + newCommunityPostKeyIndex).set(
+                                postKeyIndex
+                                ).then(()=>{
+                                    state.newPost = {
+                                        postId : postKeyIndex,
+                                        post_community : postCommunity,
+                                        post_dateTime : postDateTime,
+                                        post_desc: postDesc,
+                                        post_image : postImage,
+                                        post_likes: 0,
+                                        post_location : postLocation,
+                                        post_maxUsers : postMaxPeople,
+                                        post_peopleOpted : 0,
+                                        post_user: state.user.uid,
+                                        users_liked : {},
+                                        user_username: state.user.user_username,
+                                        user_profilePicture: state.user.user_profilePicture
+                                     }
+                                     console.log(state.newPost)
+                                     prependPost(state.newPost, state)
+                                    
+                                     state.newPost = {}
     
-                   
-                  })
+                                $('.newPostModal').css({
+                                    'display' : 'none'
+                                })
+                            })
+                        })
+        
+                       
+                      })
+                    
+                
+                
+                }
             })
 
 
